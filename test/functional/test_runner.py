@@ -94,6 +94,7 @@ BASE_SCRIPTS = [
     # Longest test should go first, to favor running tests in parallel
     # vv Tests less than 5m vv
     'feature_portgiga_nomes.py',
+    'feature_portgiga_enderecos.py --descriptors',
     'feature_fee_estimation.py',
     'feature_taproot.py',
     'feature_block.py',

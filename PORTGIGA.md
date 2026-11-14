@@ -9,6 +9,12 @@ https://github.com/bitcoin/bitcoin). A assinatura da tag não foi conferida com 
   Os programas são `build/bin/portgigad`, `portgiga-cli`, `portgiga-wallet`, `portgiga-tx`, `portgiga-util`
   (atalhos para os executáveis internos, que mantêm os nomes do Bitcoin Core para não quebrar os testes).
   O arquivo de configuração continua se chamando `bitcoin.conf` (dentro de `~/.portgiga`).
+- Etapa 2: regras da rede. Principal e teste: bloco a cada 60 s, halving a cada 1.051.200 blocos, limite de
+  21.024.000 PTG, soft forks (BIP34/65/66, CSV, SegWit, Taproot) ativos desde o bloco 1, endereços `ptg1…`
+  (principal) e `tptg1…` (teste), portas P2P/RPC 9777/9778 (principal), 19777/19778 (teste), 29777/29778 (regtest),
+  bytes mágicos d0 50 47 a1 / d1 50 47 a2 / d2 50 47 a3. Sem sementes de DNS, checkpoints ou assumeutxo.
+  A regtest mantém as regras de teste do Bitcoin (halving a cada 150, endereços `bcrt1…`) para a suíte de
+  testes original continuar servindo; testnet4 e signet do Bitcoin não são usadas pela Portgiga.
 
 ## Dependências (Ubuntu)
 
