@@ -21,6 +21,9 @@ https://github.com/bitcoin/bitcoin). A assinatura da tag não foi conferida com 
   ESP32 conseguirem fechar blocos no começo. Gêneses novos (mensagem "Portgiga 13/11/2026 - simbolo: o pau-brasil",
   saída OP_RETURN de valor zero): principal 9c263318…d2b1, teste 6382c96c…29a6. A regtest manteve o gênese do
   Bitcoin, que já atende o hash novo.
+- Etapa 4: dificuldade a cada bloco (LWMA-1, N = 60, T = 60 s; cada intervalo limitado a [1, 6T]) em
+  `LwmaNextWork` (`src/pow.cpp`). As primeiras N+1 alturas usam a dificuldade mínima. A regra especial de
+  dificuldade mínima da testnet foi desligada (a LWMA cobre períodos lentos). Na regtest nada muda.
 
 ## Dependências (Ubuntu)
 

@@ -11,7 +11,9 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cmath>
 #include <deque>
+#include <optional>
 
 BOOST_AUTO_TEST_SUITE(portgiga_lwma_tests)
 

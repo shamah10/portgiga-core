@@ -5,16 +5,51 @@
 
 #include <pow.h>
 
+#include <algorithm>
+
 #include <arith_uint256.h>
 #include <chain.h>
 #include <primitives/block.h>
 #include <uint256.h>
 #include <util/check.h>
 
+/**
+ * Portgiga: LWMA-1 (média ponderada linear dos últimos N intervalos). A dificuldade muda a cada bloco; intervalos
+ * recentes pesam mais. Cada intervalo é limitado a [1, 6T] para relógios errados não derrubarem a dificuldade.
+ */
+unsigned int LwmaNextWork(const CBlockIndex* last, const Consensus::Params& params)
+{
+    const int64_t T = params.nPowTargetSpacing;
+    const int64_t N = params.nLwmaN;
+    const arith_uint256 pow_limit = UintToArith256(params.powLimit);
+    const int64_t altura = last->nHeight + 1;
+    if (altura <= N + 1) return pow_limit.GetCompact();
+
+    arith_uint256 soma_alvos;
+    int64_t soma_pesada = 0;
+    const CBlockIndex* bloco = last->GetAncestor(altura - N - 1); // bloco i = 0 (só fornece o horário anterior)
+    int64_t tempo_anterior = bloco->GetBlockTime();
+    for (int64_t i = 1; i <= N; ++i) {
+        bloco = last->GetAncestor(altura - N - 1 + i);
+        const int64_t st = std::clamp<int64_t>(bloco->GetBlockTime() - tempo_anterior, 1, 6 * T);
+        tempo_anterior = bloco->GetBlockTime();
+        soma_pesada += st * i;
+        arith_uint256 alvo;
+        alvo.SetCompact(bloco->nBits);
+        soma_alvos += alvo / N; // divide antes de somar: não estoura 256 bits
+    }
+    const int64_t k = N * (N + 1) / 2 * T;
+    arith_uint256 novo = soma_alvos / k * soma_pesada;
+    if (novo > pow_limit) novo = pow_limit;
+    return novo.GetCompact();
+}
+
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
     assert(pindexLast != nullptr);
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
+
+    if (params.nLwmaN > 0 && !params.fPowNoRetargeting) return LwmaNextWork(pindexLast, params);
 
     // Only change once per difficulty adjustment interval
     if ((pindexLast->nHeight+1) % params.DifficultyAdjustmentInterval() != 0)
@@ -89,6 +124,8 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t height, uint32_t old_nbits, uint32_t new_nbits)
 {
     if (params.fPowAllowMinDifficultyBlocks) return true;
+    // Portgiga: com a LWMA a dificuldade muda em todo bloco; a conferência completa é feita ao validar o bloco.
+    if (params.nLwmaN > 0) return true;
 
     if (height % params.DifficultyAdjustmentInterval() == 0) {
         int64_t smallest_timespan = params.nPowTargetTimespan/4;
