@@ -7,6 +7,8 @@
 
 #include <validation.h>
 
+#include <kernel/portgiga_snapshot.h>
+
 #include <arith_uint256.h>
 #include <chain.h>
 #include <checkqueue.h>
@@ -4297,6 +4299,12 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
             !std::equal(expect.begin(), expect.end(), block.vtx[0]->vin[0].scriptSig.begin())) {
             return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cb-height", "block height mismatch in coinbase");
         }
+    }
+
+    // Portgiga: o coinbase do bloco 1 paga exatamente o snapshot da rede antiga (mais o compromisso SegWit, se houver)
+    if (nHeight == 1 && !chainman.GetParams().Snapshot().empty() &&
+        !portgiga::CoinbaseConfereSnapshot(*block.vtx[0], chainman.GetParams().Snapshot())) {
+        return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-portgiga-snapshot", "coinbase do bloco 1 diferente do snapshot");
     }
 
     // Validation for witness commitments.

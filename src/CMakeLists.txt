@@ -154,6 +154,8 @@ add_library(bitcoin_common STATIC EXCLUDE_FROM_ALL
   external_signer.cpp
   init/common.cpp
   kernel/chainparams.cpp
+  kernel/portgiga_snapshot.cpp
+  kernel/portgiga_snapshot_dados.cpp
   key.cpp
   key_io.cpp
   merkleblock.cpp

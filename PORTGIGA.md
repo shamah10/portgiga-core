@@ -27,6 +27,12 @@ https://github.com/bitcoin/bitcoin). A assinatura da tag não foi conferida com 
 - Etapa 5: emissão. 10 PTG por bloco (`nSubsidyBase`), halving a cada 1.051.200 blocos contando a altura da rede
   antiga (`nAlturaAntigaSnapshot`, definida no lançamento); o bloco 1 paga o total do snapshot (`nSnapshotTotal`).
   A regtest continua com 50 por bloco e halving a cada 150, como no Bitcoin.
+- Etapa 6: snapshot no bloco 1. O coinbase do bloco 1 tem que ser exatamente a lista do snapshot (mais o compromisso
+  SegWit); senão o bloco é recusado com `bad-portgiga-snapshot`. O minerador monta esse coinbase sozinho. As tabelas da
+  principal e da teste ficam em `src/kernel/portgiga_snapshot_dados.cpp`, geradas por
+  `contrib/portgiga/gerar_header_snapshot.py` a partir do JSON da ferramenta de snapshot (vazias até o lançamento).
+  Parcelas travadas: P2WSH de `wsh(and_v(v:pk(DONO),after(DATA)))`, gastas com a carteira importando esse descritor
+  e uma transação com `nLockTime` = DATA. Na regtest, `-snapshotteste=<arquivo.json>` carrega um snapshot de teste.
 
 ## Dependências (Ubuntu)
 

@@ -96,6 +96,8 @@ public:
     std::vector<int> GetAvailableSnapshotHeights() const;
 
     const CBlock& GenesisBlock() const { return genesis; }
+    //! Portgiga: saídas que o coinbase do bloco 1 tem que pagar (snapshot da rede antiga); vazio = sem snapshot
+    const std::vector<CTxOut>& Snapshot() const { return m_snapshot; }
     /** Default value for -checkmempool and -checkblockindex argument */
     bool DefaultConsistencyChecks() const { return fDefaultConsistencyChecks; }
     /** If this chain is exclusively used for testing */
@@ -156,6 +158,8 @@ public:
         std::unordered_map<Consensus::BuriedDeployment, int> activation_heights{};
         bool fastprune{false};
         bool enforce_bip94{false};
+        //! Portgiga: snapshot de teste (opção -snapshotteste)
+        std::vector<CTxOut> snapshot{};
     };
 
     static std::unique_ptr<const CChainParams> RegTest(const RegTestOptions& options);
@@ -178,6 +182,7 @@ protected:
     std::string bech32_hrp;
     ChainType m_chain_type;
     CBlock genesis;
+    std::vector<CTxOut> m_snapshot;
     std::vector<uint8_t> vFixedSeeds;
     bool fDefaultConsistencyChecks;
     bool m_is_mockable_chain;

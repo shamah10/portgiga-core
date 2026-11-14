@@ -14,6 +14,12 @@
 #include <util/chaintype.h>
 #include <util/strencodings.h>
 #include <util/string.h>
+#include <consensus/amount.h>
+#include <script/script.h>
+#include <univalue.h>
+
+#include <fstream>
+#include <iterator>
 
 #include <cassert>
 #include <cstdint>
@@ -41,9 +47,32 @@ void ReadSigNetArgs(const ArgsManager& args, CChainParams::SigNetOptions& option
     }
 }
 
+//! Portgiga: lê o snapshot de teste (JSON da ferramenta de snapshot) para a regtest
+static std::vector<CTxOut> LerSnapshotTeste(const std::string& caminho)
+{
+    std::ifstream arquivo{caminho};
+    if (!arquivo) throw std::runtime_error(strprintf("Não foi possível abrir -snapshotteste=%s", caminho));
+    const std::string texto{std::istreambuf_iterator<char>{arquivo}, std::istreambuf_iterator<char>{}};
+    UniValue dados;
+    if (!dados.read(texto) || !dados.isObject() || !dados["saidas"].isArray()) {
+        throw std::runtime_error(strprintf("-snapshotteste: JSON inválido em %s", caminho));
+    }
+    std::vector<CTxOut> saidas;
+    for (const UniValue& s : dados["saidas"].getValues()) {
+        const std::string hex{s["script"].get_str()};
+        if (!IsHex(hex)) throw std::runtime_error("-snapshotteste: script inválido");
+        const auto bytes = ParseHex(hex);
+        const CAmount valor = s["valor"].getInt<int64_t>();
+        if (!MoneyRange(valor) || valor <= 0) throw std::runtime_error("-snapshotteste: valor inválido");
+        saidas.emplace_back(valor, CScript(bytes.begin(), bytes.end()));
+    }
+    return saidas;
+}
+
 void ReadRegTestArgs(const ArgsManager& args, CChainParams::RegTestOptions& options)
 {
     if (auto value = args.GetBoolArg("-fastprune")) options.fastprune = *value;
+    if (const auto caminho = args.GetArg("-snapshotteste")) options.snapshot = LerSnapshotTeste(*caminho);
     if (HasTestOption(args, "bip94")) options.enforce_bip94 = true;
 
     for (const std::string& arg : args.GetArgs("-testactivationheight")) {
