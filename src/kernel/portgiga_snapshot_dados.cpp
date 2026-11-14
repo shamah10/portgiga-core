@@ -9,7 +9,9 @@
 namespace portgiga {
 
 std::vector<CTxOut> SnapshotPrincipal() { return {}; }
+int SnapshotAlturaAntigaPrincipal() { return 0; }
 
 std::vector<CTxOut> SnapshotTeste() { return {}; }
+int SnapshotAlturaAntigaTeste() { return 0; }
 
 } // namespace portgiga

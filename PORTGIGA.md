@@ -30,7 +30,9 @@ https://github.com/bitcoin/bitcoin). A assinatura da tag não foi conferida com 
 - Etapa 6: snapshot no bloco 1. O coinbase do bloco 1 tem que ser exatamente a lista do snapshot (mais o compromisso
   SegWit); senão o bloco é recusado com `bad-portgiga-snapshot`. O minerador monta esse coinbase sozinho. As tabelas da
   principal e da teste ficam em `src/kernel/portgiga_snapshot_dados.cpp`, geradas por
-  `contrib/portgiga/gerar_header_snapshot.py` a partir do JSON da ferramenta de snapshot (vazias até o lançamento).
+  `contrib/portgiga/gerar_header_snapshot.py` a partir do JSON da ferramenta de snapshot (vazias até o lançamento), junto
+  com a altura da rede antiga (`SnapshotAlturaAntiga…`); o nó para na partida se houver snapshot sem altura ou vice-versa.
+  Mineração do bloco 1 no lançamento: pelo próprio nó (`generatetoaddress`/`generateblock`), não por pool.
   Parcelas travadas: P2WSH de `wsh(and_v(v:pk(DONO),after(DATA)))`, gastas com a carteira importando esse descritor
   e uma transação com `nLockTime` = DATA. Na regtest, `-snapshotteste=<arquivo.json>` carrega um snapshot de teste.
 

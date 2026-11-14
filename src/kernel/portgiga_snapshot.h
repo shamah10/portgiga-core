@@ -21,6 +21,9 @@ struct SaidaSnapshot {
 //! Snapshot da rede principal / de teste (tabelas geradas por contrib/portgiga/gerar_header_snapshot.py)
 std::vector<CTxOut> SnapshotPrincipal();
 std::vector<CTxOut> SnapshotTeste();
+//! Altura da rede antiga no snapshot (gerada junto com a tabela; 0 = sem snapshot)
+int SnapshotAlturaAntigaPrincipal();
+int SnapshotAlturaAntigaTeste();
 
 //! Converte uma tabela gerada em saídas
 std::vector<CTxOut> SaidasDeTabela(const SaidaSnapshot* tabela, size_t tamanho);

@@ -38,6 +38,16 @@ class TestGerador(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn('{"0014' + "11" * 20 + '", 5},', cpp)
         self.assertIn("std::vector<CTxOut> SnapshotTeste() { return {}; }", cpp)
+        self.assertIn("int SnapshotAlturaAntigaPrincipal() { return 6000; }", cpp)
+        self.assertIn("int SnapshotAlturaAntigaTeste() { return 0; }", cpp)
+
+    def test_altura_antiga_obrigatoria(self):
+        d = snapshot()
+        d["altura_antiga"] = 0
+        d["sha256"] = hashlib.sha256(canonico(d)).hexdigest()
+        r, _ = self.rodar(d)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("altura_antiga", r.stderr)
 
     def test_sha_errado(self):
         r, _ = self.rodar(snapshot(sha="00" * 32))
@@ -53,7 +63,7 @@ class TestGerador(unittest.TestCase):
         self.assertNotEqual(r.returncode, 0)
 
     def test_sem_snapshot(self):
-        self.assertIn("SnapshotPrincipal() { return {}; }", gerar([], []))
+        self.assertIn("SnapshotPrincipal() { return {}; }", gerar(([], 0), ([], 0)))
 
 
 if __name__ == "__main__":

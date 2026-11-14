@@ -101,9 +101,11 @@ public:
         consensus.signet_challenge.clear();
         consensus.nSubsidyHalvingInterval = 1051200; // 2 anos de blocos de 1 minuto
         consensus.nSubsidyBase = 10 * COIN; // 10 PTG por bloco
-        consensus.nAlturaAntigaSnapshot = 0; // definido no lançamento (plano 3)
+        // Snapshot e altura antiga vêm juntos da tabela gerada: um não existe sem o outro (senão o teto de 21.024.000 estoura)
+        consensus.nAlturaAntigaSnapshot = portgiga::SnapshotAlturaAntigaPrincipal();
         m_snapshot = portgiga::SnapshotPrincipal();
         for (const CTxOut& o : m_snapshot) consensus.nSnapshotTotal += o.nValue;
+        assert(m_snapshot.empty() == (consensus.nAlturaAntigaSnapshot == 0));
         consensus.BIP34Height = 1;
         consensus.BIP34Hash = uint256{};
         consensus.BIP65Height = 1;
@@ -180,9 +182,11 @@ public:
         consensus.signet_challenge.clear();
         consensus.nSubsidyHalvingInterval = 1051200; // 2 anos de blocos de 1 minuto
         consensus.nSubsidyBase = 10 * COIN; // 10 PTG por bloco
-        consensus.nAlturaAntigaSnapshot = 0; // definido no lançamento (plano 3)
+        // Snapshot e altura antiga vêm juntos da tabela gerada: um não existe sem o outro (senão o teto de 21.024.000 estoura)
+        consensus.nAlturaAntigaSnapshot = portgiga::SnapshotAlturaAntigaTeste();
         m_snapshot = portgiga::SnapshotTeste();
         for (const CTxOut& o : m_snapshot) consensus.nSnapshotTotal += o.nValue;
+        assert(m_snapshot.empty() == (consensus.nAlturaAntigaSnapshot == 0));
         consensus.BIP34Height = 1;
         consensus.BIP34Hash = uint256{};
         consensus.BIP65Height = 1;

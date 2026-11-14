@@ -31,7 +31,8 @@ def canonico(dados: dict) -> bytes:
     return json.dumps(semhash, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
 
 
-def carregar(caminho: str, rede: str) -> list:
+def carregar(caminho: str, rede: str):
+    """(saídas, altura_antiga) de um snapshot conferido."""
     with open(caminho, encoding="utf-8") as fh:
         dados = json.load(fh)
     if dados.get("rede") != rede:
@@ -43,18 +44,23 @@ def carregar(caminho: str, rede: str) -> list:
         if not re.fullmatch(r"(?:[0-9a-f]{2})+", s["script"]) or not isinstance(s["valor"], int) or s["valor"] <= 0:
             sys.exit(f"{caminho}: saída {i} inválida")
         saidas.append((s["script"], s["valor"]))
-    return saidas
+    altura = dados.get("altura_antiga")
+    if not isinstance(altura, int) or altura <= 0:
+        sys.exit(f"{caminho}: altura_antiga precisa ser a altura da rede antiga no snapshot (maior que zero)")
+    return saidas, altura
 
 
-def tabela(nome: str, funcao: str, saidas: list) -> str:
+def tabela(nome: str, funcao: str, dados) -> str:
+    saidas, altura = dados
+    fn_altura = f"int SnapshotAlturaAntiga{funcao[len('Snapshot'):]}() {{ return {altura}; }}\n"
     if not saidas:
-        return f"\nstd::vector<CTxOut> {funcao}() {{ return {{}}; }}\n"
+        return f"\nstd::vector<CTxOut> {funcao}() {{ return {{}}; }}\n" + fn_altura
     linhas = "\n".join(f'    {{"{sc}", {v}}},' for sc, v in saidas)
     return (f"\nstatic const SaidaSnapshot {nome}[] = {{\n{linhas}\n}};\n"
-            f"std::vector<CTxOut> {funcao}() {{ return SaidasDeTabela({nome}, sizeof({nome}) / sizeof({nome}[0])); }}\n")
+            f"std::vector<CTxOut> {funcao}() {{ return SaidasDeTabela({nome}, sizeof({nome}) / sizeof({nome}[0])); }}\n" + fn_altura)
 
 
-def gerar(principal: list, teste: list) -> str:
+def gerar(principal, teste) -> str:
     return CABECALHO + tabela("SNAPSHOT_PRINCIPAL", "SnapshotPrincipal", principal) + tabela("SNAPSHOT_TESTE", "SnapshotTeste", teste) + "\n} // namespace portgiga\n"
 
 
@@ -64,7 +70,7 @@ def main():
     ap.add_argument("--teste")
     ap.add_argument("--saida", required=True)
     a = ap.parse_args()
-    texto = gerar(carregar(a.principal, "principal") if a.principal else [], carregar(a.teste, "teste") if a.teste else [])
+    texto = gerar(carregar(a.principal, "principal") if a.principal else ([], 0), carregar(a.teste, "teste") if a.teste else ([], 0))
     with open(a.saida, "w", encoding="utf-8") as fh:
         fh.write(texto)
 
