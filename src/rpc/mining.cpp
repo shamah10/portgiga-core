@@ -772,6 +772,12 @@ static RPCHelpMan getblocktemplate()
         }
     }
 
+    // Portgiga: o coinbase do bloco 1 tem que ser exatamente o snapshot; o modelo do getblocktemplate não carrega essa
+    // lista, então um pool montaria um bloco recusado. O bloco 1 é minerado pelo próprio nó.
+    if (!chainman.GetParams().Snapshot().empty() && WITH_LOCK(cs_main, return chainman.ActiveChain().Height()) == 0) {
+        throw JSONRPCError(RPC_MISC_ERROR, "O bloco 1 da Portgiga (snapshot) é minerado pelo próprio nó: use generatetoaddress ou generateblock");
+    }
+
     static unsigned int nTransactionsUpdatedLast;
     const CTxMemPool& mempool = EnsureMemPool(node);
 

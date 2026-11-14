@@ -87,12 +87,16 @@ class PortgigaSnapshotTest(BitcoinTestFramework):
             assert_equal(n.submitblock(self.bloco1(alterar)), "bad-portgiga-snapshot")
         assert_equal(n.getblockcount(), 0)
 
+        self.log.info("getblocktemplate recusa o bloco 1 (pool não consegue montar o snapshot)")
+        assert_raises_rpc_error(-1, "generatetoaddress", n.getblocktemplate, {"rules": ["segwit"]})
+
         self.log.info("O minerador monta o bloco 1 com a lista")
         if not n.listwallets():
             n.createwallet("w")
         destino = n.getnewaddress()
         self.generatetoaddress(n, 1, destino)
         cb = n.getblock(n.getbestblockhash(), 2)["tx"][0]
+        assert "coinbasevalue" in n.getblocktemplate({"rules": ["segwit"]})  # do bloco 2 em diante, normal
         saidas_cb = [v for v in cb["vout"] if not v["scriptPubKey"]["hex"].startswith("6a24aa21a9ed")]
         assert_equal([v["scriptPubKey"]["hex"] for v in saidas_cb], [s["script"] for s in self.saidas])
         assert_equal([int(v["value"] * COIN) for v in saidas_cb], [s["valor"] for s in self.saidas])
