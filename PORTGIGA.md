@@ -45,6 +45,8 @@ limite de 21.000.000) e falham de propósito na Portgiga. A lista fica em `contr
 
     ctest --test-dir build -j4 -E "$(cat contrib/portgiga/ctest-excluidos.txt)"
 
+`validation_chainstate_tests` e `validation_chainstatemanager_tests` usam os snapshots assumeutxo da regtest do Bitcoin (hashes de blocos mudaram com o PoW novo; a Portgiga não usa assumeutxo).
+
 `pow_tests` e `validation_tests` voltam a ser conferidos depois das etapas de dificuldade e emissão.
 
 ### Testes funcionais do Bitcoin que não valem para a Portgiga

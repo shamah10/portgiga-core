@@ -355,7 +355,7 @@ TestChain100Setup::TestChain100Setup(
         LOCK(::cs_main);
         assert(
             m_node.chainman->ActiveChain().Tip()->GetBlockHash().ToString() ==
-            "571d80a9967ae599cec0448b0b0ba1cfb606f584d8069bd7166b86854ba7a191");
+            "de122a7b4ae88ef4f16c88e73f082c785c55114eb1b51207de71ac538ca68624"); // Portgiga: muda com o hash de PoW
     }
 }
 
