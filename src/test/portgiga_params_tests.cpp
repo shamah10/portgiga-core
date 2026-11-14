@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(regras_da_rede_principal)
     BOOST_CHECK_EQUAL(MAX_MONEY, CAmount{21'024'000} * COIN);
     BOOST_CHECK_EQUAL(p->Bech32HRP(), "ptg");
     BOOST_CHECK_EQUAL(p->GetDefaultPort(), 9777);
-    BOOST_CHECK_EQUAL(CreateBaseChainParams(ChainType::MAIN)->RPCPort(), 9778);
+    BOOST_CHECK_EQUAL(CreateBaseChainParams(ChainType::MAIN)->RPCPort(), 9787);
     // soft forks ativos desde o começo
     BOOST_CHECK_EQUAL(c.BIP34Height, 1);
     BOOST_CHECK_EQUAL(c.SegwitHeight, 1);
@@ -43,13 +43,21 @@ BOOST_AUTO_TEST_CASE(regras_da_rede_de_teste)
     BOOST_CHECK_EQUAL(p->GetConsensus().nSubsidyHalvingInterval, 1051200);
     BOOST_CHECK_EQUAL(p->Bech32HRP(), "tptg");
     BOOST_CHECK_EQUAL(p->GetDefaultPort(), 19777);
-    BOOST_CHECK_EQUAL(CreateBaseChainParams(ChainType::TESTNET)->RPCPort(), 19778);
+    BOOST_CHECK_EQUAL(CreateBaseChainParams(ChainType::TESTNET)->RPCPort(), 19787);
 }
 
 BOOST_AUTO_TEST_CASE(regtest_portas)
 {
     BOOST_CHECK_EQUAL(Rede(ChainType::REGTEST)->GetDefaultPort(), 29777);
-    BOOST_CHECK_EQUAL(CreateBaseChainParams(ChainType::REGTEST)->RPCPort(), 29778);
+    BOOST_CHECK_EQUAL(CreateBaseChainParams(ChainType::REGTEST)->RPCPort(), 29787);
+}
+
+BOOST_AUTO_TEST_CASE(porta_rpc_nao_colide_com_a_do_tor)
+{
+    // o nó escuta conexões do Tor na porta P2P + 1: o RPC não pode usar essa
+    for (ChainType t : {ChainType::MAIN, ChainType::TESTNET, ChainType::REGTEST}) {
+        BOOST_CHECK(CreateBaseChainParams(t)->RPCPort() != Rede(t)->GetDefaultPort() + 1);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(bytes_magicos_diferentes_do_bitcoin)

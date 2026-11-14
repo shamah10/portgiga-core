@@ -11,7 +11,7 @@ https://github.com/bitcoin/bitcoin). A assinatura da tag não foi conferida com 
   O arquivo de configuração continua se chamando `bitcoin.conf` (dentro de `~/.portgiga`).
 - Etapa 2: regras da rede. Principal e teste: bloco a cada 60 s, halving a cada 1.051.200 blocos, limite de
   21.024.000 PTG, soft forks (BIP34/65/66, CSV, SegWit, Taproot) ativos desde o bloco 1, endereços `ptg1…`
-  (principal) e `tptg1…` (teste), portas P2P/RPC 9777/9778 (principal), 19777/19778 (teste), 29777/29778 (regtest),
+  (principal) e `tptg1…` (teste), portas P2P/RPC 9777/9787 (principal), 19777/19787 (teste), 29777/29787 (regtest); a porta P2P+1 fica para o Tor,
   bytes mágicos d0 50 47 a1 / d1 50 47 a2 / d2 50 47 a3. Sem sementes de DNS, checkpoints ou assumeutxo.
   A regtest mantém as regras de teste do Bitcoin (halving a cada 150, endereços `bcrt1…`) para a suíte de
   testes original continuar servindo; testnet4 e signet do Bitcoin não são usadas pela Portgiga.
@@ -33,6 +33,31 @@ https://github.com/bitcoin/bitcoin). A assinatura da tag não foi conferida com 
   `contrib/portgiga/gerar_header_snapshot.py` a partir do JSON da ferramenta de snapshot (vazias até o lançamento).
   Parcelas travadas: P2WSH de `wsh(and_v(v:pk(DONO),after(DATA)))`, gastas com a carteira importando esse descritor
   e uma transação com `nLockTime` = DATA. Na regtest, `-snapshotteste=<arquivo.json>` carrega um snapshot de teste.
+
+## Rodar um nó da Portgiga
+
+Qualquer pessoa pode rodar um nó: ele guarda a corrente inteira, confere cada bloco sozinho e ajuda a rede a não depender
+de ninguém. Num Ubuntu:
+
+1. Instale as dependências e compile (seções abaixo).
+2. Ligue o nó em segundo plano:
+
+       build/bin/portgigad -daemon
+
+3. Veja se está funcionando:
+
+       build/bin/portgiga-cli getblockchaininfo
+
+4. Conecte a outro nó da rede (endereço de quem já roda um; os fixos entram no código no lançamento):
+
+       build/bin/portgiga-cli addnode "IP-DO-OUTRO-NO:9777" add
+
+5. Para desligar:
+
+       build/bin/portgiga-cli stop
+
+Os dados ficam em `~/.portgiga`. Para quem só quer testar sem mexer na rede de verdade, use `-chain=test`
+(ou `-regtest` para uma rede só sua) em todos os comandos.
 
 ## Dependências (Ubuntu)
 

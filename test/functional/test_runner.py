@@ -95,6 +95,7 @@ BASE_SCRIPTS = [
     # vv Tests less than 5m vv
     'feature_portgiga_nomes.py',
     'feature_portgiga_pow.py',
+    'feature_portgiga_rede.py --descriptors',
     'feature_portgiga_snapshot.py --descriptors',
     'feature_portgiga_enderecos.py --descriptors',
     'feature_fee_estimation.py',
