@@ -805,10 +805,14 @@ class CBlock(CBlockHeader):
 
         return self.get_merkle_root(hashes)
 
+    def pow_hash(self):
+        """Portgiga: hash da prova de trabalho = SHA256d(b"PTG\\x01" + cabeçalho de 80 bytes), como inteiro."""
+        return uint256_from_str(hash256(b"PTG\x01" + CBlockHeader.serialize(self)))
+
     def is_valid(self):
         self.calc_sha256()
         target = uint256_from_compact(self.nBits)
-        if self.sha256 > target:
+        if self.pow_hash() > target:
             return False
         for tx in self.vtx:
             if not tx.is_valid():
@@ -820,9 +824,9 @@ class CBlock(CBlockHeader):
     def solve(self):
         self.rehash()
         target = uint256_from_compact(self.nBits)
-        while self.sha256 > target:
+        while self.pow_hash() > target:
             self.nNonce += 1
-            self.rehash()
+        self.rehash()
 
     # Calculate the block weight using witness and non-witness
     # serialization size (does NOT use sigops).

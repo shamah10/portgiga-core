@@ -53,6 +53,10 @@ public:
 
     uint256 GetHash() const;
 
+    //! Portgiga: hash usado na prova de trabalho = SHA256d("PTG\x01" + cabeçalho de 80 bytes).
+    //! O hash de identidade do bloco continua sendo GetHash().
+    uint256 GetPoWHash() const;
+
     NodeSeconds Time() const
     {
         return NodeSeconds{std::chrono::seconds{nTime}};

@@ -77,6 +77,17 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
+
+/**
+ * Gênese da Portgiga: mesma forma do Bitcoin, com a mensagem própria e saída OP_RETURN (valor zero, nunca gastável).
+ * Gerado por contrib/portgiga/pow_ref.py (a prova de trabalho usa GetPoWHash()).
+ */
+static CBlock CreatePortgigaGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits)
+{
+    const char* pszTimestamp = "Portgiga 13/11/2026 - simbolo: o pau-brasil";
+    return CreateGenesisBlock(pszTimestamp, CScript() << OP_RETURN, nTime, nNonce, nBits, 1, 0);
+}
+
 /**
  * Main network on which people trade goods and services.
  */
@@ -95,7 +106,8 @@ public:
         consensus.CSVHeight = 1;
         consensus.SegwitHeight = 1;
         consensus.MinBIP9WarningHeight = 0;
-        consensus.powLimit = uint256{"00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
+        // Dificuldade mínima baixa (~1 milhão de hashes por bloco): poucas ESP32 já fecham blocos no começo da rede.
+        consensus.powLimit = uint256{"00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
         consensus.nPowTargetTimespan = 2016 * 60;
         consensus.nPowTargetSpacing = 60; // um bloco por minuto
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -124,10 +136,10 @@ public:
         m_assumed_blockchain_size = 1;
         m_assumed_chain_state_size = 1;
 
-        genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, 50 * COIN); // trocado na etapa 3
+        genesis = CreatePortgigaGenesisBlock(1794614400, 424577, 0x1e0fffff);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256{"000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"});
-        assert(genesis.hashMerkleRoot == uint256{"4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"});
+        assert(consensus.hashGenesisBlock == uint256{"9c263318bf10cf437221c73a86068f93a202afaad118e2a032ee7e3ba415d2b1"});
+        assert(genesis.hashMerkleRoot == uint256{"11875663980e63b4a96331a9a2a6c520c35d8316d2f43507a613863817eb38fe"});
 
         // Sem sementes de DNS por enquanto; os nós fixos entram no lançamento (plano 3).
         vSeeds.clear();
@@ -168,7 +180,8 @@ public:
         consensus.CSVHeight = 1;
         consensus.SegwitHeight = 1;
         consensus.MinBIP9WarningHeight = 0;
-        consensus.powLimit = uint256{"00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
+        // Dificuldade mínima baixa (~1 milhão de hashes por bloco): poucas ESP32 já fecham blocos no começo da rede.
+        consensus.powLimit = uint256{"00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
         consensus.nPowTargetTimespan = 2016 * 60;
         consensus.nPowTargetSpacing = 60; // um bloco por minuto
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -197,10 +210,10 @@ public:
         m_assumed_blockchain_size = 1;
         m_assumed_chain_state_size = 1;
 
-        genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, 50 * COIN); // trocado na etapa 3
+        genesis = CreatePortgigaGenesisBlock(1794614401, 2983836, 0x1e0fffff);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256{"000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"});
-        assert(genesis.hashMerkleRoot == uint256{"4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"});
+        assert(consensus.hashGenesisBlock == uint256{"6382c96cfeb47db1d4ca2fccba444374ece10e16b426620a6a87e9cc7ab929a6"});
+        assert(genesis.hashMerkleRoot == uint256{"11875663980e63b4a96331a9a2a6c520c35d8316d2f43507a613863817eb38fe"});
 
         // Sem sementes de DNS por enquanto; os nós fixos entram no lançamento (plano 3).
         vSeeds.clear();

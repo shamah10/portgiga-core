@@ -15,6 +15,12 @@ https://github.com/bitcoin/bitcoin). A assinatura da tag não foi conferida com 
   bytes mágicos d0 50 47 a1 / d1 50 47 a2 / d2 50 47 a3. Sem sementes de DNS, checkpoints ou assumeutxo.
   A regtest mantém as regras de teste do Bitcoin (halving a cada 150, endereços `bcrt1…`) para a suíte de
   testes original continuar servindo; testnet4 e signet do Bitcoin não são usadas pela Portgiga.
+- Etapa 3: prova de trabalho própria. `CBlockHeader::GetPoWHash()` = SHA256d("PTG\x01" + cabeçalho de 80 bytes);
+  o hash de identidade do bloco continua `GetHash()`. Referência em Python: `contrib/portgiga/pow_ref.py`.
+  Dificuldade mínima (`powLimit`) da principal e da teste: `00000fff…` (~1 milhão de hashes por bloco), para poucas
+  ESP32 conseguirem fechar blocos no começo. Gêneses novos (mensagem "Portgiga 13/11/2026 - simbolo: o pau-brasil",
+  saída OP_RETURN de valor zero): principal 9c263318…d2b1, teste 6382c96c…29a6. A regtest manteve o gênese do
+  Bitcoin, que já atende o hash novo.
 
 ## Dependências (Ubuntu)
 

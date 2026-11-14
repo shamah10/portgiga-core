@@ -13,6 +13,16 @@ uint256 CBlockHeader::GetHash() const
     return (HashWriter{} << *this).GetHash();
 }
 
+uint256 CBlockHeader::GetPoWHash() const
+{
+    // O prefixo muda o tamanho e a posição do nonce: as máquinas de Bitcoin (ASICs) não servem para a Portgiga.
+    static constexpr unsigned char PREFIXO[4] = {'P', 'T', 'G', 0x01};
+    HashWriter w{};
+    w.write(std::as_bytes(std::span{PREFIXO}));
+    w << *this;
+    return w.GetHash();
+}
+
 std::string CBlock::ToString() const
 {
     std::stringstream s;
