@@ -110,6 +110,7 @@ public:
         consensus.powLimit = uint256{"00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
         consensus.nPowTargetTimespan = 2016 * 60;
         consensus.nPowTargetSpacing = 60; // um bloco por minuto
+        consensus.nLwmaN = 60; // dificuldade ajustada a cada bloco (LWMA-1) olhando os últimos 60
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.enforce_BIP94 = false;
         consensus.fPowNoRetargeting = false;
@@ -184,7 +185,8 @@ public:
         consensus.powLimit = uint256{"00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
         consensus.nPowTargetTimespan = 2016 * 60;
         consensus.nPowTargetSpacing = 60; // um bloco por minuto
-        consensus.fPowAllowMinDifficultyBlocks = true;
+        consensus.nLwmaN = 60; // dificuldade ajustada a cada bloco (LWMA-1) olhando os últimos 60
+        consensus.fPowAllowMinDifficultyBlocks = false; // a LWMA já cobre períodos lentos
         consensus.enforce_BIP94 = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1815; // 90% of 2016

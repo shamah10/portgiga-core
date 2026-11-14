@@ -43,3 +43,19 @@ limite de 21.000.000) e falham de propósito na Portgiga. A lista fica em `contr
     ctest --test-dir build -j4 -E "$(cat contrib/portgiga/ctest-excluidos.txt)"
 
 `pow_tests` e `validation_tests` voltam a ser conferidos depois das etapas de dificuldade e emissão.
+
+### Testes funcionais do Bitcoin que não valem para a Portgiga
+
+Lista em `contrib/portgiga/funcionais-excluidos.txt` (rodar com
+`python3 build/test/functional/test_runner.py -j4 --exclude "$(cat contrib/portgiga/funcionais-excluidos.txt)"`):
+
+- assumeutxo/dumptxoutset (`feature_assumeutxo`, `wallet_assumeutxo`, `rpc_dumptxoutset`): usam hashes de snapshots da
+  regtest do Bitcoin; com o hash de PoW novo os blocos minerados mudam de nonce e de hash.
+- `rpc_getblockfrompeer`, `rpc_getblockstats`: comparam com hashes/dados gravados de blocos do Bitcoin.
+- `rpc_validateaddress`, `wallet_crosschain`, `mining_mainnet`, `p2p_dos_header_tree`: vetores e cabeçalhos das redes
+  principal/testnet do Bitcoin.
+- `feature_signet`, `tool_signet_miner`, `feature_config_args`: usam signet/testnet4 do Bitcoin, cujos gêneses não
+  atendem o PoW da Portgiga (a Portgiga não usa essas redes).
+
+Resultado da suíte completa depois da etapa 3: 321 testes, 13 falhas, todas acima; `feature_loadblock` foi corrigido
+(bytes mágicos da regtest).

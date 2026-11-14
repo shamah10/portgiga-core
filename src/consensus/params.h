@@ -115,6 +115,8 @@ struct Params {
     bool enforce_BIP94;
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
+    //! Portgiga: janela da dificuldade LWMA (0 = ajuste do Bitcoin a cada 2016 blocos)
+    int64_t nLwmaN{0};
     int64_t nPowTargetTimespan;
     std::chrono::seconds PowTargetSpacing() const
     {
