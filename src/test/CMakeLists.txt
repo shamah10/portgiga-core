@@ -113,6 +113,7 @@ add_executable(test_bitcoin
   uint256_tests.cpp
   util_string_tests.cpp
   util_tests.cpp
+  portgiga_nomes_tests.cpp
   util_threadnames_tests.cpp
   util_trace_tests.cpp
   validation_block_tests.cpp

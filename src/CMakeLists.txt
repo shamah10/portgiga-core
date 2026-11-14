@@ -466,3 +466,14 @@ endif()
 if(BUILD_FUZZ_BINARY)
   add_subdirectory(test/fuzz)
 endif()
+
+# Portgiga: nomes dos programas para o usuário (portgigad, portgiga-cli...). Os alvos internos continuam
+# com os nomes do Bitcoin Core para não quebrar a estrutura de testes; aqui só criamos os atalhos.
+foreach(alvo bitcoind bitcoin-cli bitcoin-wallet bitcoin-tx bitcoin-util)
+  if(TARGET ${alvo})
+    string(REPLACE "bitcoin" "portgiga" nome_portgiga ${alvo})
+    add_custom_command(TARGET ${alvo} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_NAME:${alvo}> $<TARGET_FILE_DIR:${alvo}>/${nome_portgiga}
+      VERBATIM)
+  endif()
+endforeach()
