@@ -748,6 +748,10 @@ class CBlockHeader:
         self.calc_sha256()
         return self.sha256
 
+    def pow_hash(self):
+        """Portgiga: hash da prova de trabalho = SHA256d(b"PTG\\x01" + cabeçalho de 80 bytes), como inteiro."""
+        return uint256_from_str(hash256(b"PTG\x01" + CBlockHeader.serialize(self)))
+
     def __repr__(self):
         return "CBlockHeader(nVersion=%i hashPrevBlock=%064x hashMerkleRoot=%064x nTime=%s nBits=%08x nNonce=%08x)" \
             % (self.nVersion, self.hashPrevBlock, self.hashMerkleRoot,
@@ -804,10 +808,6 @@ class CBlock(CBlockHeader):
             hashes.append(ser_uint256(tx.calc_sha256(True)))
 
         return self.get_merkle_root(hashes)
-
-    def pow_hash(self):
-        """Portgiga: hash da prova de trabalho = SHA256d(b"PTG\\x01" + cabeçalho de 80 bytes), como inteiro."""
-        return uint256_from_str(hash256(b"PTG\x01" + CBlockHeader.serialize(self)))
 
     def is_valid(self):
         self.calc_sha256()
