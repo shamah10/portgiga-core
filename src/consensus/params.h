@@ -6,6 +6,7 @@
 #ifndef BITCOIN_CONSENSUS_PARAMS_H
 #define BITCOIN_CONSENSUS_PARAMS_H
 
+#include <consensus/amount.h>
 #include <uint256.h>
 
 #include <chrono>
@@ -117,6 +118,12 @@ struct Params {
     int64_t nPowTargetSpacing;
     //! Portgiga: janela da dificuldade LWMA (0 = ajuste do Bitcoin a cada 2016 blocos)
     int64_t nLwmaN{0};
+    //! Portgiga: recompensa inicial por bloco (o Bitcoin usa 50; a Portgiga 10 PTG)
+    CAmount nSubsidyBase{50 * COIN};
+    //! Portgiga: altura da rede antiga no snapshot; a emissão continua o calendário dela
+    int nAlturaAntigaSnapshot{0};
+    //! Portgiga: soma das saídas do snapshot, pagas pelo bloco 1 (0 = sem snapshot)
+    CAmount nSnapshotTotal{0};
     int64_t nPowTargetTimespan;
     std::chrono::seconds PowTargetSpacing() const
     {

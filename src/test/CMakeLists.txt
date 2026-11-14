@@ -117,6 +117,7 @@ add_executable(test_bitcoin
   portgiga_params_tests.cpp
   portgiga_pow_tests.cpp
   portgiga_lwma_tests.cpp
+  portgiga_subsidio_tests.cpp
   util_threadnames_tests.cpp
   util_trace_tests.cpp
   validation_block_tests.cpp

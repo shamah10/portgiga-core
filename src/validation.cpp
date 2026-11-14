@@ -1939,13 +1939,16 @@ PackageMempoolAcceptResult ProcessNewPackage(Chainstate& active_chainstate, CTxM
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
-    int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
+    // Portgiga: o bloco 1 paga o snapshot dos saldos da rede antiga
+    if (nHeight == 1 && consensusParams.nSnapshotTotal > 0) return consensusParams.nSnapshotTotal;
+
+    // Portgiga: os blocos da rede antiga contam no calendário (o snapshot já é a emissão deles)
+    int halvings = (nHeight + consensusParams.nAlturaAntigaSnapshot) / consensusParams.nSubsidyHalvingInterval;
     // Force block reward to zero when right shift is undefined.
     if (halvings >= 64)
         return 0;
 
-    CAmount nSubsidy = 50 * COIN;
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
+    CAmount nSubsidy = consensusParams.nSubsidyBase;
     nSubsidy >>= halvings;
     return nSubsidy;
 }

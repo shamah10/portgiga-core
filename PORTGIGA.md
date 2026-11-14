@@ -24,6 +24,9 @@ https://github.com/bitcoin/bitcoin). A assinatura da tag não foi conferida com 
 - Etapa 4: dificuldade a cada bloco (LWMA-1, N = 60, T = 60 s; cada intervalo limitado a [1, 6T]) em
   `LwmaNextWork` (`src/pow.cpp`). As primeiras N+1 alturas usam a dificuldade mínima. A regra especial de
   dificuldade mínima da testnet foi desligada (a LWMA cobre períodos lentos). Na regtest nada muda.
+- Etapa 5: emissão. 10 PTG por bloco (`nSubsidyBase`), halving a cada 1.051.200 blocos contando a altura da rede
+  antiga (`nAlturaAntigaSnapshot`, definida no lançamento); o bloco 1 paga o total do snapshot (`nSnapshotTotal`).
+  A regtest continua com 50 por bloco e halving a cada 150, como no Bitcoin.
 
 ## Dependências (Ubuntu)
 
@@ -47,7 +50,9 @@ limite de 21.000.000) e falham de propósito na Portgiga. A lista fica em `contr
 
 `validation_chainstate_tests` e `validation_chainstatemanager_tests` usam os snapshots assumeutxo da regtest do Bitcoin (hashes de blocos mudaram com o PoW novo; a Portgiga não usa assumeutxo).
 
-`pow_tests` e `validation_tests` voltam a ser conferidos depois das etapas de dificuldade e emissão.
+`pow_tests` (vetores do ajuste a cada 2.016 blocos do Bitcoin) e `validation_tests` (recompensa inicial de 50 BTC e soma de
+subsídios em passos de 1.000 blocos, que não fecha com o intervalo de 1.051.200) seguem fora; a dificuldade e a emissão
+da Portgiga têm testes próprios (`portgiga_lwma_tests`, `portgiga_subsidio_tests`).
 
 ### Testes funcionais do Bitcoin que não valem para a Portgiga
 

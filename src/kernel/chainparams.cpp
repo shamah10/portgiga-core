@@ -99,6 +99,8 @@ public:
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
         consensus.nSubsidyHalvingInterval = 1051200; // 2 anos de blocos de 1 minuto
+        consensus.nSubsidyBase = 10 * COIN; // 10 PTG por bloco
+        consensus.nAlturaAntigaSnapshot = 0; // definido no lançamento (plano 3)
         consensus.BIP34Height = 1;
         consensus.BIP34Hash = uint256{};
         consensus.BIP65Height = 1;
@@ -174,6 +176,8 @@ public:
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
         consensus.nSubsidyHalvingInterval = 1051200; // 2 anos de blocos de 1 minuto
+        consensus.nSubsidyBase = 10 * COIN; // 10 PTG por bloco
+        consensus.nAlturaAntigaSnapshot = 0; // definido no lançamento (plano 3)
         consensus.BIP34Height = 1;
         consensus.BIP34Hash = uint256{};
         consensus.BIP65Height = 1;
