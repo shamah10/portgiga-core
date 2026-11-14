@@ -1,0 +1,1 @@
+^(util_test_runner|bip324_tests|bloom_tests|denialofservice_tests|descriptor_tests|key_io_tests|key_tests|miner_tests|net_peer_connection_tests|pow_tests|rpc_tests|script_standard_tests|transaction_tests|util_tests|validation_tests)$

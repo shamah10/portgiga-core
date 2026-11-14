@@ -27,3 +27,13 @@ Rode uma vez (pede a senha do PC):
     cmake -B build -DBUILD_GUI=OFF -DENABLE_IPC=OFF
     cmake --build build -j4
     ctest --test-dir build -j4
+
+## Testes do Bitcoin Core que não valem para a Portgiga
+
+Estes testes unitários conferem valores da rede do Bitcoin (endereços `1…`/`3…`/`bc1…`, chaves WIF com prefixo 128,
+recompensas de 50 BTC, ajuste de dificuldade a cada 2.016 blocos, vetores do BIP324 com os bytes mágicos do Bitcoin,
+limite de 21.000.000) e falham de propósito na Portgiga. A lista fica em `contrib/portgiga/ctest-excluidos.txt`:
+
+    ctest --test-dir build -j4 -E "$(cat contrib/portgiga/ctest-excluidos.txt)"
+
+`pow_tests` e `validation_tests` voltam a ser conferidos depois das etapas de dificuldade e emissão.
