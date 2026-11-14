@@ -47,6 +47,17 @@ struct Cadeia {
         b.nBits = nbits;
         b.BuildSkip();
     }
+    //! Acrescenta um bloco com horário absoluto (pode ser no passado)
+    void adiciona_em(int64_t tempo)
+    {
+        const uint32_t nbits = proximo_nbits();
+        CBlockIndex& b = blocos.emplace_back();
+        b.pprev = &blocos[blocos.size() - 2];
+        b.nHeight = b.pprev->nHeight + 1;
+        b.nTime = tempo;
+        b.nBits = nbits;
+        b.BuildSkip();
+    }
 };
 
 const Consensus::Params& Principal()
@@ -131,6 +142,52 @@ BOOST_AUTO_TEST_CASE(horario_no_passado_nao_derruba_a_dificuldade)
     const double r = Razao(Alvo(k.proximo_nbits()), Alvo(base));
     // o intervalo grande é limitado a 6×T, então o alvo sobe pouco
     BOOST_CHECK_MESSAGE(r < 1.20, "razão " << r);
+}
+
+// Revisão final: um minerador com 10% do poder carimba todo bloco dele em MTP+1 (permitido pelo consenso).
+// Com o limite por intervalo cru, a dificuldade caía para sempre (~1,46x o alvo); com horários monotônicos fica ~1x.
+BOOST_AUTO_TEST_CASE(minerador_carimbando_mtp_mais_um_nao_derruba_a_dificuldade)
+{
+    const auto& c = Principal();
+    const arith_uint256 base = UintToArith256(c.powLimit) / 1000;
+    Cadeia k{c, Compacto(base)};
+    for (int i = 0; i < c.nLwmaN + 2; ++i) k.adiciona(60, Compacto(base));
+    double relogio = k.topo().nTime;
+    double soma = 0;
+    int contados = 0;
+    for (int i = 0; i < 3000; ++i) {
+        const double r = Razao(Alvo(k.proximo_nbits()), base);
+        relogio += 60.0 / r; // poder constante: intervalo real proporcional à dificuldade
+        if (i % 10 == 0) {
+            k.adiciona_em(k.topo().GetMedianTimePast() + 1); // o atacante
+        } else {
+            k.adiciona_em(std::max<int64_t>(std::llround(relogio), k.topo().GetMedianTimePast() + 1));
+        }
+        if (i >= 1000) { soma += Razao(Alvo(k.topo().nBits), base); ++contados; }
+    }
+    const double media = soma / contados;
+    BOOST_CHECK_MESSAGE(media < 1.15, "alvo médio " << media << "x o normal");
+}
+
+// Um minerador com 10% do poder alternando horários 1 h no futuro e no passado não baixa a dificuldade
+BOOST_AUTO_TEST_CASE(horarios_alternando_futuro_e_passado)
+{
+    const auto& c = Principal();
+    const arith_uint256 base = UintToArith256(c.powLimit) / 1000;
+    Cadeia k{c, Compacto(base)};
+    for (int i = 0; i < c.nLwmaN + 2; ++i) k.adiciona(60, Compacto(base));
+    double relogio = k.topo().nTime;
+    double soma = 0;
+    int contados = 0;
+    for (int i = 0; i < 3000; ++i) {
+        relogio += 60.0 / Razao(Alvo(k.proximo_nbits()), base);
+        const int64_t honesto = std::max<int64_t>(std::llround(relogio), k.topo().GetMedianTimePast() + 1);
+        if (i % 20 == 0) k.adiciona_em(honesto + 3600);
+        else if (i % 20 == 10) k.adiciona_em(std::max<int64_t>(honesto - 3600, k.topo().GetMedianTimePast() + 1));
+        else k.adiciona_em(honesto);
+        if (i >= 1000) { soma += Razao(Alvo(k.topo().nBits), base); ++contados; }
+    }
+    BOOST_CHECK_MESSAGE(soma / contados < 1.15, "alvo médio " << soma / contados << "x o normal");
 }
 
 BOOST_AUTO_TEST_CASE(transicao_permitida_em_qualquer_bloco)

@@ -15,7 +15,7 @@
 
 /**
  * Portgiga: LWMA-1 (média ponderada linear dos últimos N intervalos). A dificuldade muda a cada bloco; intervalos
- * recentes pesam mais. Cada intervalo é limitado a [1, 6T] para relógios errados não derrubarem a dificuldade.
+ * recentes pesam mais. Horários monotônicos e cada intervalo limitado a 6T: relógios errados não derrubam a dificuldade.
  */
 unsigned int LwmaNextWork(const CBlockIndex* last, const Consensus::Params& params)
 {
@@ -31,8 +31,12 @@ unsigned int LwmaNextWork(const CBlockIndex* last, const Consensus::Params& para
     int64_t tempo_anterior = bloco->GetBlockTime();
     for (int64_t i = 1; i <= N; ++i) {
         bloco = last->GetAncestor(altura - N - 1 + i);
-        const int64_t st = std::clamp<int64_t>(bloco->GetBlockTime() - tempo_anterior, 1, 6 * T);
-        tempo_anterior = bloco->GetBlockTime();
+        // Horários monotônicos (como na LWMA-1 de referência): um bloco carimbado no passado conta como
+        // anterior + 1 s e não "devolve" tempo ao próximo. Sem isso, um minerador pequeno carimbando
+        // MTP+1 baixava a dificuldade para sempre.
+        const int64_t este = std::max<int64_t>(bloco->GetBlockTime(), tempo_anterior + 1);
+        const int64_t st = std::min<int64_t>(6 * T, este - tempo_anterior);
+        tempo_anterior = este;
         soma_pesada += st * i;
         arith_uint256 alvo;
         alvo.SetCompact(bloco->nBits);
