@@ -61,6 +61,31 @@ de ninguém. Num Ubuntu:
 Os dados ficam em `~/.portgiga`. Para quem só quer testar sem mexer na rede de verdade, use `-chain=test`
 (ou `-regtest` para uma rede só sua) em todos os comandos.
 
+Para deixar o nó ligado 24 h e aceitando conexões de outros nós, crie `~/.portgiga/bitcoin.conf` com:
+
+    server=1
+    listen=1
+    txindex=1
+    maxtipage=315360000
+
+e abra a porta **9777** no roteador (redirecionar para o IP do PC). O `maxtipage` longo evita que um nó que ficou
+desligado por dias fique preso em "sincronizando" numa rede pequena. Quem quiser minerar precisa também do pool
+(repositório `portgiga-pool`), porque um nó sozinho e sem conexões não entrega trabalho para mineradores.
+
+## Seeds (nós fixos no código)
+
+Um nó novo precisa achar os outros. No começo, isso é feito à mão com `addnode` (acima). Quando houver um nó com
+**IP fixo que aceite conexões na porta 9777** (o do dono ou o de qualquer voluntário), ele entra no código:
+
+- `src/kernel/chainparams.cpp`, na rede principal: `vFixedSeeds` (lista de IPs fixos, gerada por
+  `contrib/seeds/generate-seeds.py` a partir de um arquivo `nodes_main.txt` com `IP:9777` por linha) e, se um dia houver
+  domínio com DNS de descoberta, `vSeeds.emplace_back("seed.exemplo.com.br")`.
+- Recompile e publique a versão nova. Nós antigos continuam funcionando; os novos acham a rede sozinhos.
+
+Nenhum IP é inventado aqui: a lista fica vazia até existir um endereço que aceite conexões de verdade (conferir de um
+celular no 4G antes de pôr no código). Mais de um seed, em lugares diferentes, é o que tira a rede da dependência de uma
+pessoa.
+
 ## Dependências (Ubuntu)
 
 Rode uma vez (pede a senha do PC):
