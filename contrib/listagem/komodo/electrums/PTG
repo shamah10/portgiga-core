@@ -1,0 +1,4 @@
+[
+  {"url": "electrum1.portgiga.com.br:50702", "protocol": "SSL", "contact": [{"github": "shamah10"}]},
+  {"url": "electrum2.portgiga.com.br:50702", "protocol": "SSL", "contact": [{"github": "shamah10"}]}
+]

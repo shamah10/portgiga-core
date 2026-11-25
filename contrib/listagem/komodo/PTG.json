@@ -1,0 +1,52 @@
+[
+  {
+    "coin": "PTG",
+    "name": "portgiga",
+    "fname": "Portgiga",
+    "rpcport": 9787,
+    "pubtype": 56,
+    "p2shtype": 117,
+    "wiftype": 184,
+    "segwit": true,
+    "bech32_hrp": "ptg",
+    "address_format": {
+      "format": "segwit"
+    },
+    "txfee": 0,
+    "dust": 1000,
+    "mm2": 1,
+    "required_confirmations": 3,
+    "avg_blocktime": 60,
+    "mature_confirmations": 100,
+    "protocol": {
+      "type": "UTXO"
+    },
+    "derivation_path": "m/44'/7770'",
+    "sign_message_prefix": "Portgiga Signed Message:\n",
+    "_A_FAZER": "SLIP-44 7770 pedido (aguardando aprovação); electrum: 2 servidores públicos (ver ../electrumx)"
+  },
+  {
+    "coin": "PTGT",
+    "name": "portgiga_testnet",
+    "fname": "Portgiga Testnet",
+    "rpcport": 19787,
+    "pubtype": 111,
+    "p2shtype": 196,
+    "wiftype": 239,
+    "segwit": true,
+    "bech32_hrp": "tptg",
+    "address_format": {
+      "format": "segwit"
+    },
+    "txfee": 0,
+    "mm2": 1,
+    "required_confirmations": 1,
+    "avg_blocktime": 60,
+    "protocol": {
+      "type": "UTXO"
+    },
+    "derivation_path": "m/84'/1'",
+    "is_testnet": true,
+    "sign_message_prefix": "Portgiga Signed Message:\n"
+  }
+]
