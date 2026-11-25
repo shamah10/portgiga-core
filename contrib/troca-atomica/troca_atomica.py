@@ -9,7 +9,7 @@ portgigad (PTG), litecoind (LTC), bitcoind (BTC)... O protocolo:
   4. Ana resgata Y na rede B revelando S.
   5. Beto lê S da corrente B e resgata X na rede A.
 
-`python3 troca_atomica.py --ensaio` roda a troca inteira entre dois portgigad -regtest
+`python3 troca_atomica.py --ensaio [--btc PASTA_DO_BITCOIN_CORE]` roda a troca inteira entre dois portgigad -regtest
 (o segundo faz o papel da "outra moeda"). Só redes de teste. Nada de dinheiro real.
 Para LTC/BTC de verdade em testnet: criar Rede(cli=..., args=[...], hrp="tltc"/"tb").
 """
@@ -57,12 +57,19 @@ def main():
         print(__doc__)
         return
     a = No(porta=29787, p2p=29777)
-    b = No(porta=29797, p2p=29778)
+    if "--btc" in sys.argv:
+        # lado B = Bitcoin Core de verdade (pasta com bitcoind e bitcoin-cli)
+        pasta = sys.argv[sys.argv.index("--btc") + 1]
+        b = No(porta=29797, p2p=29778, bindir=pasta, daemon="bitcoind", cli="bitcoin-cli", nome="BTC")
+        print(b("getnetworkinfo")["subversion"], "do lado B")
+    else:
+        b = No(porta=29797, p2p=29778)
     try:
         for n in (a, b):
             n("createwallet", "a")
             n.minerar(101)
         ok = trocar(a, b, "7", "2")
+        print(f"\nAna deu 7 {a.nome} e recebeu 2 {b.nome}; Beto deu 2 {b.nome} e recebeu 7 {a.nome}.")
         print("\nTROCA COMPLETA ✔" if ok else "\nFALHOU")
         assert ok
     finally:

@@ -37,12 +37,13 @@ PORTA_RPC = 29787
 
 
 class No:
-    def __init__(self, porta=PORTA_RPC, p2p=29777, hrp="bcrt"):
-        self.hrp = hrp
+    def __init__(self, porta=PORTA_RPC, p2p=29777, hrp="bcrt", bindir=BIN, daemon="portgigad", cli="portgiga-cli", nome="PTG"):
+        self.hrp, self.nome = hrp, nome
+        self.cli = os.path.join(bindir, cli)
         self.dir = tempfile.mkdtemp(prefix="ptg-regtest-")
         self.args = [f"-datadir={self.dir}", "-regtest", f"-rpcport={porta}",
                      "-rpcuser=t", "-rpcpassword=t"]
-        subprocess.run([os.path.join(BIN, "portgigad"), *self.args, "-daemon",
+        subprocess.run([os.path.join(bindir, daemon), *self.args, "-daemon",
                         "-fallbackfee=0.0001", "-txindex=1", "-listen=0", f"-port={p2p}"],
                        check=True, stdout=subprocess.DEVNULL)
         for _ in range(60):
@@ -51,10 +52,10 @@ class No:
                 return
             except subprocess.CalledProcessError:
                 time.sleep(0.5)
-        raise SystemExit("portgigad não subiu")
+        raise SystemExit(f"{daemon} não subiu")
 
     def __call__(self, metodo, *params, carteira=None):
-        cmd = [os.path.join(BIN, "portgiga-cli"), *self.args]
+        cmd = [self.cli, *self.args]
         if carteira:
             cmd.append(f"-rpcwallet={carteira}")
         cmd += [metodo, *[p if isinstance(p, str) else json.dumps(p) for p in params]]
