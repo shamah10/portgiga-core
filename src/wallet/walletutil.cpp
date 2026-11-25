@@ -10,6 +10,9 @@
 #include <logging.h>
 
 namespace wallet {
+//! Portgiga: número da PTG na SLIP-0044 (pedido de registro em satoshilabs/slips).
+static constexpr uint32_t PORTGIGA_SLIP44_COIN_TYPE{7770};
+
 fs::path GetWalletDir()
 {
     fs::path path;
@@ -81,11 +84,12 @@ WalletDescriptor GenerateWalletDescriptor(const CExtPubKey& master_key, const Ou
     } // no default case, so the compiler can warn about missing cases
     assert(!desc_prefix.empty());
 
-    // Mainnet derives at 0', testnet and regtest derive at 1'
+    // Portgiga: a rede principal deriva no coin type SLIP-0044 próprio da PTG (7770');
+    // testnet e regtest derivam em 1' (o "Testnet (all coins)" da SLIP-0044).
     if (Params().IsTestChain()) {
         desc_prefix += "/1h";
     } else {
-        desc_prefix += "/0h";
+        desc_prefix += "/" + std::to_string(PORTGIGA_SLIP44_COIN_TYPE) + "h";
     }
 
     std::string internal_path = internal ? "/1" : "/0";

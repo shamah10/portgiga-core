@@ -21,7 +21,7 @@
  * Text used to signify that a signed message follows and to prevent
  * inadvertently signing a transaction.
  */
-const std::string MESSAGE_MAGIC = "Bitcoin Signed Message:\n";
+const std::string MESSAGE_MAGIC = "Portgiga Signed Message:\n"; // Portgiga: assinaturas de mensagem não valem no Bitcoin (e vice-versa)
 
 MessageVerificationResult MessageVerify(
     const std::string& address,
