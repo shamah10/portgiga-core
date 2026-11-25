@@ -36,6 +36,12 @@ https://github.com/bitcoin/bitcoin). A assinatura da tag não foi conferida com 
   Parcelas travadas: P2WSH de `wsh(and_v(v:pk(DONO),after(DATA)))`, gastas com a carteira importando esse descritor
   e uma transação com `nLockTime` = DATA. Na regtest, `-snapshotteste=<arquivo.json>` carrega um snapshot de teste.
 
+- Etapa 7: identidade própria para carteiras e listagem. Mensagens assinadas usam o prefixo
+  "Portgiga Signed Message:\n" (`MESSAGE_MAGIC` em `src/common/signmessage.cpp`): uma assinatura do Bitcoin não vale
+  na Portgiga e vice-versa. A carteira da rede principal deriva no coin type SLIP-0044 **7770**
+  (`m/44'|49'|84'|86'/7770'/0'`, `src/wallet/walletutil.cpp`); teste e regtest seguem em 1'. Os testes de mensagem de
+  `util_tests` foram reescritos com endereços `P…`/`p…` da Portgiga, e `util_tests` saiu da lista de excluídos.
+
 ## Rodar um nó da Portgiga
 
 Qualquer pessoa pode rodar um nó: ele guarda a corrente inteira, confere cada bloco sozinho e ajuda a rede a não depender
