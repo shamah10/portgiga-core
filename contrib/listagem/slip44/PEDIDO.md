@@ -15,4 +15,4 @@ wallets at m/{44,49,84,86}'/7770'/0' — see src/wallet/walletutil.cpp:
 Project: https://github.com/shamah10/portgiga · https://portgiga.pages.dev
 ---
 
-PRÉ-REQUISITO (regra do repositório): o link acima precisa ser público → publicar o portgiga-core no GitHub.
+ABERTO em 25/11/2026: https://github.com/satoshilabs/slips/pull/2109
